@@ -10,7 +10,7 @@ Text Domain: gallery-og-images
 Domain Path: /languages
 */
 
-function gogi_fb_og_images() {
+function gogi_og_images_from_attachments() {
     global $post;
  
     if( is_singular() ) {
@@ -31,4 +31,23 @@ function gogi_fb_og_images() {
         }
     }    
 }
-add_action('wp_head', 'gogi_fb_og_images', 1);
+
+function gogi_og_images_from_gallery() {
+    global $post;
+ 
+    if( is_singular() ) {
+        
+        $post_content = $post->post_content;
+    	preg_match('/\[gallery.*ids=.(.*).\]/', $post_content, $ids);
+    	$image_ids = explode(",", $ids[1]);
+        
+        if ( $image_ids ) {
+            foreach ( $image_ids as $image_id ) {
+                $image = wp_get_attachment_url( $image_id );
+                echo '<meta property="og:image" content="'. $image .'"/>'. PHP_EOL;
+            }
+        }
+    }    
+}
+
+add_action('wp_head', 'gogi_og_images_from_gallery', 1);
